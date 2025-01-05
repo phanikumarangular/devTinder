@@ -1,28 +1,36 @@
 const express = require('express');
-const {AdminAuth,userAuth } = require('./middleWare/auth');
-
+const {connectDB} =  require('./config/database');
+const User = require('./Models/user');
 const app = express(); // this instance of the express
 
-app.use('/admin',AdminAuth);
+app.post('/signup',async (req, res) => {
+    const userObj = {
+        firstName : "Phani",
+        lastName : "Natte",
+        emailId : "phani@gmail.com",
+        password: "Namaste@123" 
+    }
 
-app.get('/admin/getAllData',(req,res) => {
-    res.send('user details send');
+    
+    // Creating a new instance of the user Model
+    const user = new User(userObj); //// trying create new using with userObj
+    try{
+        await user.save();
+        res.send('User added successfully')
+    } catch(err){
+        
+    }
+    
+
 });
 
-app.get('/admin/delete',(req,res) => {    
-    res.send('Deleted a userf ');
-});
-
-// for login no need authentication
-app.get('/user/login', (req,res) => {    
-    res.send('user logged in successfully');
-});
-app.get('/user/getUserDetails', userAuth, (req,res) => {    
-    res.send('user api Deleted a userf ');
-});
-
-// server is running on 3000 port number
-app.listen(3000,() => {
-    // this call back function call when server has been started
-    console.log('server is successfully started')
-});
+connectDB().then(() => {
+    console.log('database connected successfully');
+    // server is running on 3000 port number
+    app.listen(7777,() => {
+        // this call back function call when server has been started
+        console.log('server is successfully started')
+    });
+}).catch((error) => {
+    console.error('database not connected ');
+})
